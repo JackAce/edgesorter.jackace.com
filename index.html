@@ -1,0 +1,336 @@
+---
+title: Edge Sorting Baccarat Simulator - JackAce.com
+---
+<html>
+    <head>
+        <title>Edge Sorting Baccarat Simulator by JackAce</title>
+        <link rel="stylesheet" href="/assets/css/main.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="/assets/js/edgesorter.js"></script>
+        {%- if site.google_analytics -%}
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{-site.google_analytics-}}"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', '{{-site.google_analytics-}}');
+            </script>
+        {%- endif -%}
+    </head>
+    <body>
+
+        <table>
+            <tr>
+              <td></td>
+              <td>
+                <img src="/assets/img/cards/Js-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/As-Ornate-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/2s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/3s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/4s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/5s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/6s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/7s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/8s-250x350.png" width="55" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/9s-250x350.png" width="55" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                &nbsp;
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="55" id="cardEdge0" class="untagged" onClick="toggleCardEdge(0);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="55" id="cardEdge1" class="untagged" onClick="toggleCardEdge(1);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="55" id="cardEdge2" class="untagged" onClick="toggleCardEdge(2);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="55" id="cardEdge3" class="untagged" onClick="toggleCardEdge(3);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="55" id="cardEdge4" class="untagged" onClick="toggleCardEdge(4);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="55" id="cardEdge5" class="untagged" onClick="toggleCardEdge(5);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-long-edge-3500x2500.png" width="55" id="cardEdge6" class="tagged" onClick="toggleCardEdge(6);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-long-edge-3500x2500.png" width="55" id="cardEdge7" class="tagged" onClick="toggleCardEdge(7);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-long-edge-3500x2500.png" width="55" id="cardEdge8" class="tagged" onClick="toggleCardEdge(8);" />
+              </td>
+              <td>
+                <img src="/assets/img/cards/card-back-long-edge-3500x2500.png" width="55" id="cardEdge9" class="tagged" onClick="toggleCardEdge(9);" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="11">
+                &nbsp;
+              </td>
+              <td>
+                Total
+              </td>
+              <td>
+                %
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Banker Wins
+              </td>
+              <td class="data">
+                <span id="card0BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card1BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card2BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card3BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card4BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card5BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card6BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card7BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card8BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card9BankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="totalBankerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="totalBankerWinsPercentSpan" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Player Wins
+              </td>
+              <td class="data">
+                <span id="card0PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card1PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card2PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card3PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card4PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card5PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card6PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card7PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card8PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="card9PlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="totalPlayerWinsSpan" />
+              </td>
+              <td class="data">
+                <span id="totalPlayerWinsPercentSpan" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Ties
+              </td>
+              <td class="data">
+                <span id="card0TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card1TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card2TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card3TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card4TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card5TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card6TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card7TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card8TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="card9TiesSpan" />
+              </td>
+              <td class="data">
+                <span id="totalTiesSpan" />
+              </td>
+              <td class="data">
+                <span id="totalTiesPercentSpan" />
+              </td>
+            </tr>
+          </table>
+          
+          <br/>
+          
+          <table>
+            <tr>
+              <td>
+                Count
+              </td>
+              <td colspan="3">
+                <input type="text" value="1000000" class="handsText" id="simulatedHandsText" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br/><br/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Bet when<br/>
+                next card is
+              </td>
+              <td>
+                Banker
+              </td>
+              <td>
+                Player
+              </td>
+              <td>
+                Tie
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img src="/assets/img/cards/card-back-short-edge-3500x2500.png" width="45" />
+              </td>
+              <td>
+                <input type="text" value="100" id="untaggedBetBankerText" onBlur="cleanUpBets()" />
+              </td>
+              <td>
+                <input type="text" value="0" id="untaggedBetPlayerText" onBlur="cleanUpBets()" />
+              </td>
+              <td>
+                <input type="text" value="0" id="untaggedBetTieText" onBlur="cleanUpBets()" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img src="/assets/img/cards/card-back-long-edge-3500x2500.png" width="45" />
+              </td>
+              <td>
+                <input type="text" value="0" id="taggedBetBankerText" onBlur="cleanUpBets()" />
+              </td>
+              <td>
+                <input type="text" value="100" id="taggedBetPlayerText" onBlur="cleanUpBets()" />
+              </td>
+              <td>
+                <input type="text" value="0" id="taggedBetTieText" onBlur="cleanUpBets()" />
+              </td>
+            </tr>
+          </table>
+          
+          <br/><br/>
+          <input type="button" value="Run Simulation" onClick="runSimulation();" />
+          
+          <br/><br/>
+          <table>
+            <tr>
+              <td>
+                Total Hands:
+              </td>
+              <td class="data">
+                <span id="totalHandsSpan" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Total Correct Bets:
+              </td>
+              <td class="data">
+                <span id="totalCorrectBetsSpan" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Total Incorrect Bets:
+              </td>
+              <td class="data">
+                <span id="totalIncorrectBetsSpan" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Total Win/Loss:
+              </td>
+              <td class="data">
+                <span id="totalWinAmountSpan" />
+              </td>
+            </tr>
+          </table>
+          
+
+    </body> 
+</html>

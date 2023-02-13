@@ -1,0 +1,30 @@
+body, p, div, span, td, th {
+    font-family: Arial;
+    font-size: 14px;
+    color: #fff;
+    background-color: #030;
+}
+  
+td.data {
+    text-align: right;
+    width: 60px;
+}
+
+input {
+    width: 50px;
+}
+
+input.handsText {
+    width: 100px;
+}
+
+input[type=button] {
+    width: 150px;
+}
+
+.positive {
+    color: #0c0;
+}
+.negative {
+    color: #c00;
+}
