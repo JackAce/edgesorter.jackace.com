@@ -26,6 +26,6 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://edgesorter.jackace.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jackace
 github_username:  jackace
-google_analytics: "G-4JJ188RCGP"
+google_analytics: "G-4PMVXXTQ5D"
 
 port: 4999
