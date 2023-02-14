@@ -1,7 +1,7 @@
 body {
     font-family: Arial;
     color: #fff;
-    background-color: #030;
+    background-color: #161;
 }
   
 p, div, span {
@@ -12,7 +12,7 @@ p, div, span {
 td.data {
     text-align: right;
     width: 60px;
-    background-color: #333;
+    background-color: #111;
 }
 
 input {

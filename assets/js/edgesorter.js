@@ -178,6 +178,7 @@ function resetStats() {
   totalTies = 0;
 	totalCorrectBets = 0;
 	totalIncorrectBets = 0;
+  totalAmountWagered = 0;
 
 	startCardBankerWins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   startCardPlayerWins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -196,19 +197,29 @@ function processHand(playerCards, bankerCards, bettingConfig) {
 
 	let playerBetAmount = bettingConfig.taggedBetPlayer;
   let bankerBetAmount = bettingConfig.taggedBetBanker;
+  let tieBetAmount = bettingConfig.taggedBetTie;
   
   if (firstCardIsTagged) {
     playerBetAmount = bettingConfig.taggedBetPlayer;
     bankerBetAmount = bettingConfig.taggedBetBanker;
+    tieBetAmount = bettingConfig.taggedBetTie;
   }
   else {
     playerBetAmount = bettingConfig.untaggedBetPlayer;
     bankerBetAmount = bettingConfig.untaggedBetBanker;
+    tieBetAmount = bettingConfig.untaggedBetTie;
   }
 
   if (playerBetAmount > bankerBetAmount) {
     betIsOnBanker = false;
+    totalAmountWagered += playerBetAmount;
   }
+  else {
+    totalAmountWagered += bankerBetAmount;
+  }
+
+  let tieBetMade = tieBetAmount > 0;
+  totalAmountWagered += tieBetAmount;
 
 	if (playerTotal > bankerTotal) {
   	totalPlayerWins++;
@@ -221,6 +232,9 @@ function processHand(playerCards, bankerCards, bettingConfig) {
     else {
       totalIncorrectBets++;
       winTotal -= bankerBetAmount;
+    }
+    if (tieBetMade) {
+      winTotal -= tieBetAmount;
     }
   }
 	else if (playerTotal < bankerTotal) {
@@ -235,10 +249,16 @@ function processHand(playerCards, bankerCards, bettingConfig) {
       totalCorrectBets++;
       winTotal += bankerBetAmount * 0.95;
     }
+    if (tieBetMade) {
+      winTotal -= tieBetAmount;
+    }
   }
   else {
   	totalTies++;
     startCardTies[firstCard]++;
+    if (tieBetMade) {
+      winTotal += tieBetAmount * 8;
+    }
   }
 }
 
@@ -298,27 +318,38 @@ function updateUI() {
   
 	$('#totalHandsSpan').text(simulatedHandCount.toLocaleString('en-us'));
 	$('#totalBankerWinsSpan').text(totalBankerWins.toLocaleString('en-us'));
-	$('#totalBankerWinsPercentSpan').text(formatPercentage((1.000 * totalBankerWins) / simulatedHandCount));
+	$('#totalBankerWinsPercentSpan').text(formatPercentage(totalBankerWins/simulatedHandCount));
 	$('#totalPlayerWinsSpan').text(totalPlayerWins.toLocaleString('en-us'));
-	$('#totalPlayerWinsPercentSpan').text(formatPercentage((1.000 * totalPlayerWins) / simulatedHandCount));
+	$('#totalPlayerWinsPercentSpan').text(formatPercentage(totalPlayerWins/simulatedHandCount));
 	$('#totalTiesSpan').text(totalTies.toLocaleString('en-us'));
-	$('#totalTiesPercentSpan').text(formatPercentage((1.000 * totalTies) / simulatedHandCount));
+	$('#totalTiesPercentSpan').text(formatPercentage(totalTies/simulatedHandCount));
  	$('#totalCorrectBetsSpan').text(totalCorrectBets.toLocaleString('en-us'));
-	$('#totalIncorrectBetsSpan').text(totalIncorrectBets.toLocaleString('en-us'));
+  $('#totalIncorrectBetsSpan').text(totalIncorrectBets.toLocaleString('en-us'));
+  $('#totalAmountWageredSpan').text(totalAmountWagered.toLocaleString('en-us'));
+
 	$('#totalWinAmountSpan').text(winTotal.toLocaleString('en-us'));
+  $('#totalWinAmountPercentageSpan').text(formatPercentage(winTotal/totalAmountWagered));
 
 	for (let i = 0; i < 10; i++) {
+    let totalHands = startCardBankerWins[i] + startCardPlayerWins[i] + startCardTies[i];
 		$('#card' + i + 'BankerWinsSpan').text(startCardBankerWins[i].toLocaleString('en-us'));
+		$('#card' + i + 'BankerWinPercentSpan').text(formatPercentage(startCardBankerWins[i] / totalHands));
 		$('#card' + i + 'PlayerWinsSpan').text(startCardPlayerWins[i].toLocaleString('en-us'));
+		$('#card' + i + 'PlayerWinPercentSpan').text(formatPercentage(startCardPlayerWins[i] / totalHands));
 		$('#card' + i + 'TiesSpan').text(startCardTies[i].toLocaleString('en-us'));
+		$('#card' + i + 'TiePercentSpan').text(formatPercentage(startCardTies[i] / totalHands));
     
     if (startCardBankerWins[i] > startCardPlayerWins[i]) {
       $('#card' + i + 'BankerWinsSpan').attr('class','positive');
+      $('#card' + i + 'BankerWinPercentSpan').attr('class','positive');
       $('#card' + i + 'PlayerWinsSpan').attr('class','negative');
+      $('#card' + i + 'PlayerWinPercentSpan').attr('class','negative');
     }
     else {
       $('#card' + i + 'BankerWinsSpan').attr('class','negative');
+      $('#card' + i + 'BankerWinPercentSpan').attr('class','negative');
       $('#card' + i + 'PlayerWinsSpan').attr('class','positive');
+      $('#card' + i + 'PlayerWinPercentSpan').attr('class','positive');
     }    
   }
 }
