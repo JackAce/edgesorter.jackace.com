@@ -23,6 +23,7 @@ let tagged = [false, false, false, false, false, false, true, true, true, true];
 //let betAmountsTagged = [100, 100];
 
 let winTotal = 0.0;
+let startTime, endTime;
 
 function getHandValue(cardArray) {
 	if (cardArray.length == 2) {
@@ -48,7 +49,7 @@ function getSimulatedHandCount() {
 
 function formatPercentage(value) {
 	let returnValue = parseFloat(value);
-  returnValue = 100.00 * returnValue;
+  returnValue = 100.0 * returnValue;
   returnValue = returnValue.toFixed(2) + '%';
   
   return returnValue;
@@ -95,6 +96,11 @@ function cleanUpBets() {
   }
 }
 
+function getIsTagged(index) {
+  let cssClass = $('#cardEdge' + index).attr('class');
+  return cssClass === "tagged";
+}
+
 function toggleCardEdge(index) {
 	let isTagged = getIsTagged(index);
   if (isTagged) {
@@ -106,12 +112,7 @@ function toggleCardEdge(index) {
   	$('#cardEdge' + index).attr('src', IMGURL_CARD_BACK_TAGGED);
   }
   
-  tagged = getTagged();
-}
-
-function getIsTagged(index) {
-  	let cssClass = $('#cardEdge' + index).attr('class');
-		return cssClass === "tagged";
+  tagged[index] = !tagged[index];
 }
 
 function getTagged() {
@@ -128,29 +129,29 @@ function getTagged() {
 function initializeShoe(numberOfDecks) {
 	shoe = [];
 
-	for (let i = 0; i < numberOfDecks; i++) {
-  	// Loop through decks
+	for (let i = 0; i < numberOfDecks * 4; i++) {
+  	// Loop through decks * 4 suits
     for (let j = 0; j < 4; j++) {
-    	// Loop through the 4 suits
-      for (let k = 0; k < 4; k++) {
-        // Push the tens and face cards
-        shoe.push(0);
-      }
-      for (let k = 1; k < 10; k++) {
-        // Push the other ranks
-        shoe.push(k);
-      }
-
+      // Push the tens and face cards
+      shoe.push(0);
+    }
+    for (let j = 1; j < 10; j++) {
+      // Push the other ranks
+      shoe.push(j);
     }
   }
+
+  console.log('INITIALIZED: ' + shoe.length);
 }
 
 // TODO: Pass in shoe
+// NOTES: This shuffles whatever is in the shoe (undealt cards)
 function shuffle() {
 	let randomIndex = 0;
   let shoeLength = shoe.length;
   let currentLength = 0;
-	let shuffledShoe = [];
+
+  let shuffledShoe = [];
 	for (let i = 0; i < shoeLength; i++) {
   	currentLength = shoe.length;
   	randomIndex = getRandomInt(currentLength);
@@ -158,8 +159,8 @@ function shuffle() {
     shoe.splice(randomIndex, 1);
   }
   
-  shoe = shuffledShoe;
-  return shuffledShoe;
+  shoe.push(...shuffledShoe);
+  return;
 }
 
 function dealTopCard() {
@@ -167,7 +168,7 @@ function dealTopCard() {
 	let returnValue = shoe[topCardIndex];
   
   discardTray.push(returnValue);
-  shoe.splice(topCardIndex, 1);
+  shoe.splice(topCardIndex, 1); // pop?
   
   return returnValue;
 }
@@ -264,7 +265,9 @@ function processHand(playerCards, bankerCards, bettingConfig) {
 
 function dealHand(bettingConfig) {
 	if (shoe.length < SHUFFLE_POINT) {
-    initializeShoe(NUMBER_OF_DECKS);
+    //console.log('SHUFFLING at ' + shoe.length);
+    shoe.push(...discardTray);
+    discardTray = [];
     shuffle();
 	}
   
@@ -329,6 +332,14 @@ function updateUI() {
 
 	$('#totalWinAmountSpan').text(winTotal.toLocaleString('en-us'));
   $('#totalWinAmountPercentageSpan').text(formatPercentage(winTotal/totalAmountWagered));
+  if (winTotal < 0) {
+    $('#totalWinAmountSpan').attr('class', 'negative');
+    $('#totalWinAmountPercentageSpan').attr('class', 'negative');
+  }
+  else {
+    $('#totalWinAmountSpan').attr('class', 'positive');
+    $('#totalWinAmountPercentageSpan').attr('class', 'positive');
+  }
 
 	for (let i = 0; i < 10; i++) {
     let totalHands = startCardBankerWins[i] + startCardPlayerWins[i] + startCardTies[i];
@@ -350,11 +361,13 @@ function updateUI() {
       $('#card' + i + 'BankerWinPercentSpan').attr('class','negative');
       $('#card' + i + 'PlayerWinsSpan').attr('class','positive');
       $('#card' + i + 'PlayerWinPercentSpan').attr('class','positive');
-    }    
+    }
   }
+  $('#elapsedTimeSpan').text(((endTime - startTime)/1000).toFixed(3) + ' sec');
 }
 
 function runSimulation() {
+  startTime = new Date();
 	let simulatedHandCount = getSimulatedHandCount();
   let bettingConfig = getBettingConfig();
   
@@ -362,14 +375,18 @@ function runSimulation() {
 	  return;
   }
   
-  initializeShoe(NUMBER_OF_DECKS);
+  //initializeShoe(NUMBER_OF_DECKS);
   shuffle();
   resetStats();
-  tagged = getTagged();
+  //tagged = getTagged();
 
   for (let j = 0; j < simulatedHandCount; j++) {
     dealHand(bettingConfig);
   }
   
+  endTime = new Date();
   updateUI();
 }
+
+initializeShoe(NUMBER_OF_DECKS);
+  

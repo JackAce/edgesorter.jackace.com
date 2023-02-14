@@ -18,9 +18,11 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
             gtag('config', '{{-site.google_analytics-}}');
             </script>
         {%- endif -%}
+        {%- if jekyll.environment == 'production' and site.google_adsense -%}
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.google_adsense }}" crossorigin="anonymous"></script>
+        {%- endif -%}
     </head>
     <body>
-
         <table>
             <tr>
               <td></td>
@@ -350,23 +352,22 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
           
           <table>
             <tr>
-              <td>
+              <th>
                 Count
-              </td>
+              </th>
               <td colspan="3">
-                <input type="text" value="1000000" class="handsText" id="simulatedHandsText" />
+                <input type="text" value="1000000" class="handsText" id="simulatedHandsText" maxlength="8"/>
               </td>
             </tr>
             <tr>
               <td>
-                <br/><br/>
+                &nbsp;
               </td>
             </tr>
             <tr>
-              <td>
-                Bet when<br/>
-                next card is
-              </td>
+              <th>
+                Next&nbsp;card&nbsp;
+              </th>
               <td>
                 <img src="/assets/img/baccarat-banker-60x34.png" width="60" />
               </td>
@@ -378,9 +379,9 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
               </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 <img src="/assets/img/cards/card-back-short-edge-60x43.png" width="45" />
-              </td>
+              </th>
               <td>
                 <input type="text" value="100" id="untaggedBetBankerText" onBlur="cleanUpBets()" />
               </td>
@@ -392,9 +393,9 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
               </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 <img src="/assets/img/cards/card-back-long-edge-60x43.png" width="45" />
-              </td>
+              </th>
               <td>
                 <input type="text" value="0" id="taggedBetBankerText" onBlur="cleanUpBets()" />
               </td>
@@ -433,7 +434,7 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
                 Total Correct Bets:
               </td>
               <td class="data">
-                <span id="totalCorrectBetsSpan" />
+                <span id="totalCorrectBetsSpan" class="positive" />
               </td>
             </tr>
             <tr>
@@ -441,7 +442,7 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
                 Total Incorrect Bets:
               </td>
               <td class="data">
-                <span id="totalIncorrectBetsSpan" />
+                <span id="totalIncorrectBetsSpan" class="negative" />
               </td>
             </tr>
             <tr>
@@ -470,7 +471,7 @@ title: Edge Sorting Baccarat Simulator - JackAce.com
                 Elapsed Time:
               </td>
               <td class="data">
-                <span id="elapsedTime Span" />
+                <span id="elapsedTimeSpan" />
               </td>
             </tr>
           </table>
