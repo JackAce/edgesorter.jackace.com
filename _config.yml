@@ -18,14 +18,15 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Edge Sorter
+title: Edge Sorter by JackAce
 email: jackace@jackace.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Edge Sorter
+  Edge Sorter by JackAce
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://edgesorter.jackace.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jackace
 github_username:  jackace
-google_analytics: "G-4PMVXXTQ5D"
+google_analytics: G-4PMVXXTQ5D
+google_adsense: ca-pub-6195512053653719
 
 port: 4999
