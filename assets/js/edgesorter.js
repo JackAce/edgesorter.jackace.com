@@ -1,5 +1,5 @@
 const NUMBER_OF_DECKS = 8;
-const SHUFFLE_POINT = 26;		// Shuffle when there is fewer than 104 cards left
+const SHUFFLE_POINT = 26;		// Shuffle when there is fewer than 26 cards left
 const NUMBER_OF_HANDS = 1000000;
 const IMGURL_CARD_BACK_UNTAGGED = "/assets/img/cards/card-back-short-edge-3500x2500.png";
 const IMGURL_CARD_BACK_TAGGED = "/assets/img/cards/card-back-long-edge-3500x2500.png";
@@ -20,7 +20,6 @@ let startCardTies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // Let's edge sort the 6, 7, 8, 9 - they result in a player advantage
 let tagged = [false, false, false, false, false, false, true, true, true, true];
 // First amount is Tagged bet on Player, Second value is NOT tagged bet on Banker
-//let betAmountsTagged = [100, 100];
 
 let winTotal = 0.0;
 let startTime, endTime;
@@ -140,11 +139,8 @@ function initializeShoe(numberOfDecks) {
       shoe.push(j);
     }
   }
-
-  console.log('INITIALIZED: ' + shoe.length);
 }
 
-// TODO: Pass in shoe
 // NOTES: This shuffles whatever is in the shoe (undealt cards)
 function shuffle() {
 	let randomIndex = 0;
@@ -164,11 +160,8 @@ function shuffle() {
 }
 
 function dealTopCard() {
-	let topCardIndex = shoe.length - 1;
-	let returnValue = shoe[topCardIndex];
-  
+  let returnValue = shoe.pop();
   discardTray.push(returnValue);
-  shoe.splice(topCardIndex, 1); // pop?
   
   return returnValue;
 }
@@ -181,10 +174,12 @@ function resetStats() {
 	totalIncorrectBets = 0;
   totalAmountWagered = 0;
 
-	startCardBankerWins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  startCardPlayerWins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  startCardTies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
+  for (let i = 0; i < 10; i++) {
+    startCardBankerWins[i] = 0;
+    startCardPlayerWins[i] = 0;
+    startCardTies[i] = 0;
+  }
+  
   winTotal = 0.0;
 }
 
@@ -243,8 +238,8 @@ function processHand(playerCards, bankerCards, bettingConfig) {
 	  startCardBankerWins[firstCard]++;
 
 		if (!betIsOnBanker) {
-      winTotal -= playerBetAmount;
       totalIncorrectBets++;
+      winTotal -= playerBetAmount;
     }
     else {
       totalCorrectBets++;
@@ -265,7 +260,6 @@ function processHand(playerCards, bankerCards, bettingConfig) {
 
 function dealHand(bettingConfig) {
 	if (shoe.length < SHUFFLE_POINT) {
-    //console.log('SHUFFLING at ' + shoe.length);
     shoe.push(...discardTray);
     discardTray = [];
     shuffle();
@@ -297,13 +291,14 @@ function dealHand(bettingConfig) {
   }
   
   // TODO: Need to figure out 
+  let player3rdCard = playerCards[2];
   
   if (!playerCardDrawn && bankerTotal < 6
   		|| playerCardDrawn && bankerTotal < 3
-  		|| playerCardDrawn && bankerTotal === 3 && playerCards[2] !== 8
-  		|| playerCardDrawn && bankerTotal === 4 && playerCards[2] > 1 && playerCards[2] < 8
-  		|| playerCardDrawn && bankerTotal === 5 && playerCards[2] > 3 && playerCards[2] < 8
-  		|| playerCardDrawn && bankerTotal === 6 && playerCards[2] > 5 && playerCards[2] < 8
+  		|| playerCardDrawn && bankerTotal === 3 && player3rdCard !== 8
+  		|| playerCardDrawn && bankerTotal === 4 && player3rdCard > 1 && player3rdCard < 8
+  		|| playerCardDrawn && bankerTotal === 5 && player3rdCard > 3 && player3rdCard < 8
+  		|| playerCardDrawn && bankerTotal === 6 && player3rdCard > 5 && player3rdCard < 8
       ) {
   	// Player draws third card 
   	bankerCards[2] = dealTopCard();
@@ -363,22 +358,30 @@ function updateUI() {
       $('#card' + i + 'PlayerWinPercentSpan').attr('class','positive');
     }
   }
+
   $('#elapsedTimeSpan').text(((endTime - startTime)/1000).toFixed(3) + ' sec');
 }
 
 function runSimulation() {
   startTime = new Date();
+  //$('#mainDiv').addClass('loading'); 
+  //$('body').attr('class', 'loading'); 
+  $('#loading').show();
+
+  setTimeout(() => { asyncSimulation(); }, 100);
+}
+
+function asyncSimulation() {
+  //startTime = new Date();
 	let simulatedHandCount = getSimulatedHandCount();
   let bettingConfig = getBettingConfig();
-  
+
   if (simulatedHandCount <= 0) {
 	  return;
   }
   
-  //initializeShoe(NUMBER_OF_DECKS);
   shuffle();
   resetStats();
-  //tagged = getTagged();
 
   for (let j = 0; j < simulatedHandCount; j++) {
     dealHand(bettingConfig);
@@ -386,7 +389,22 @@ function runSimulation() {
   
   endTime = new Date();
   updateUI();
+  //$('#mainDiv').removeClass('loading'); 
+  //$('body').attr('class', ''); 
+  hideLoader();
+  //$('body').attr('class', ''); 
+  //setTimeout(() => { $('body').attr('class', ''); }, 100);
 }
 
-initializeShoe(NUMBER_OF_DECKS);
-  
+function hideLoader() {
+  $('#loading').hide();
+}
+
+function init() {
+  hideLoader();
+  initializeShoe(NUMBER_OF_DECKS);
+}
+
+$(document).ready(function() {
+  init();
+});
