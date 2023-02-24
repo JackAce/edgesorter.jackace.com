@@ -43,13 +43,45 @@ function getRandomInt(max) {
 function getSimulatedHandCount() {
 	let returnValue = -1;
   returnValue = parseInt($('#simulatedHandsText').val());
+
+  if (returnValue < 1) {
+    returnValue = 1;
+  }
+  else if (returnValue > 10000000) {
+    returnValue = 10000000;
+  }
+
+  $('#simulatedHandsText').val(returnValue)
   return returnValue;
 }
 
-function formatPercentage(value) {
+function getAccuracy() {
+	let returnValue = 100;
+  let textValue = parseFloat($('#accuracyText').val());
+  if (textValue < 51) {
+    returnValue = 51;
+  }
+  else if (textValue > 100) {
+    returnValue = 100;
+  }
+  else {
+    returnValue = textValue;
+  }
+
+  $('#accuracyText').val(returnValue)
+
+  return returnValue;
+}
+
+function formatPercentage(value, places) {
 	let returnValue = parseFloat(value);
   returnValue = 100.0 * returnValue;
-  returnValue = returnValue.toFixed(2) + '%';
+  if (places >= 0) {
+    returnValue = returnValue.toFixed(places) + '%';
+  }
+  else {
+    returnValue = returnValue.toFixed(2) + '%';
+  }
   
   return returnValue;
 }
@@ -183,18 +215,32 @@ function resetStats() {
   winTotal = 0.0;
 }
 
-function processHand(playerCards, bankerCards, bettingConfig) {
+function processHand(playerCards, bankerCards, bettingConfig, accuracy) {
   let playerTotal = getHandValue(playerCards);
 	let bankerTotal = getHandValue(bankerCards);
   let firstCard = playerCards[0];
   
-  let firstCardIsTagged = tagged[firstCard];
   let betIsOnBanker = true;
 
 	let playerBetAmount = bettingConfig.taggedBetPlayer;
   let bankerBetAmount = bettingConfig.taggedBetBanker;
   let tieBetAmount = bettingConfig.taggedBetTie;
-  
+
+  let cardIsSortedAccurately = true;
+  let firstCardIsTagged = tagged[firstCard];
+
+  if (accuracy < 100) {
+    let randomIndex = getRandomInt(100);
+    if (randomIndex > accuracy) {
+      cardIsSortedAccurately = false;
+    }
+  }
+
+  if (!cardIsSortedAccurately) {
+    firstCardIsTagged = !firstCardIsTagged;
+  }
+
+  // Figure out the bets
   if (firstCardIsTagged) {
     playerBetAmount = bettingConfig.taggedBetPlayer;
     bankerBetAmount = bettingConfig.taggedBetBanker;
@@ -206,6 +252,7 @@ function processHand(playerCards, bankerCards, bettingConfig) {
     tieBetAmount = bettingConfig.untaggedBetTie;
   }
 
+  // Update the running bet amounts
   if (playerBetAmount > bankerBetAmount) {
     betIsOnBanker = false;
     totalAmountWagered += playerBetAmount;
@@ -258,10 +305,10 @@ function processHand(playerCards, bankerCards, bettingConfig) {
   }
 }
 
-function dealHand(bettingConfig) {
+function dealHand(bettingConfig, accuracy) {
 	if (shoe.length < SHUFFLE_POINT) {
     shoe.push(...discardTray);
-    discardTray = [];
+    discardTray.length = 0
     shuffle();
 	}
   
@@ -280,7 +327,7 @@ function dealHand(bettingConfig) {
   
   if (playerTotal > 7 || bankerTotal > 7) {
   	// Someone has a natural...
-    processHand(playerCards, bankerCards, bettingConfig);
+    processHand(playerCards, bankerCards, bettingConfig, accuracy);
     return;
   }
   
@@ -290,7 +337,6 @@ function dealHand(bettingConfig) {
     playerCardDrawn = true;
   }
   
-  // TODO: Need to figure out 
   let player3rdCard = playerCards[2];
   
   if (!playerCardDrawn && bankerTotal < 6
@@ -304,17 +350,20 @@ function dealHand(bettingConfig) {
   	bankerCards[2] = dealTopCard();
   }
   
-  processHand(playerCards, bankerCards, bettingConfig);  
+  processHand(playerCards, bankerCards, bettingConfig, accuracy);  
 }
 
+// Executed when simulation is complete
 function updateUI() {
 	let simulatedHandCount = getSimulatedHandCount();
+  let accuracy = getAccuracy();
   
   if (simulatedHandCount <= 0) {
 	  return;
   }
   
 	$('#totalHandsSpan').text(simulatedHandCount.toLocaleString('en-us'));
+	$('#accuracySpan').text(formatPercentage(accuracy/100.00, 0));
 	$('#totalBankerWinsSpan').text(totalBankerWins.toLocaleString('en-us'));
 	$('#totalBankerWinsPercentSpan').text(formatPercentage(totalBankerWins/simulatedHandCount));
 	$('#totalPlayerWinsSpan').text(totalPlayerWins.toLocaleString('en-us'));
@@ -326,7 +375,12 @@ function updateUI() {
   $('#totalAmountWageredSpan').text(totalAmountWagered.toLocaleString('en-us'));
 
 	$('#totalWinAmountSpan').text(winTotal.toLocaleString('en-us'));
-  $('#totalWinAmountPercentageSpan').text(formatPercentage(winTotal/totalAmountWagered));
+  if (totalAmountWagered > 0) {
+    $('#totalWinAmountPercentageSpan').text(formatPercentage(winTotal/totalAmountWagered));
+  }
+  else {
+    $('#totalWinAmountPercentageSpan').text('--');
+  }
   if (winTotal < 0) {
     $('#totalWinAmountSpan').attr('class', 'negative');
     $('#totalWinAmountPercentageSpan').attr('class', 'negative');
@@ -339,11 +393,19 @@ function updateUI() {
 	for (let i = 0; i < 10; i++) {
     let totalHands = startCardBankerWins[i] + startCardPlayerWins[i] + startCardTies[i];
 		$('#card' + i + 'BankerWinsSpan').text(startCardBankerWins[i].toLocaleString('en-us'));
-		$('#card' + i + 'BankerWinPercentSpan').text(formatPercentage(startCardBankerWins[i] / totalHands));
 		$('#card' + i + 'PlayerWinsSpan').text(startCardPlayerWins[i].toLocaleString('en-us'));
-		$('#card' + i + 'PlayerWinPercentSpan').text(formatPercentage(startCardPlayerWins[i] / totalHands));
 		$('#card' + i + 'TiesSpan').text(startCardTies[i].toLocaleString('en-us'));
-		$('#card' + i + 'TiePercentSpan').text(formatPercentage(startCardTies[i] / totalHands));
+
+    if (totalHands > 0) {
+      $('#card' + i + 'BankerWinPercentSpan').text(formatPercentage(startCardBankerWins[i] / totalHands));
+      $('#card' + i + 'PlayerWinPercentSpan').text(formatPercentage(startCardPlayerWins[i] / totalHands));
+      $('#card' + i + 'TiePercentSpan').text(formatPercentage(startCardTies[i] / totalHands));
+    }
+    else {
+      $('#card' + i + 'BankerWinPercentSpan').text('--');
+      $('#card' + i + 'PlayerWinPercentSpan').text('--');
+      $('#card' + i + 'TiePercentSpan').text('--');
+    }
     
     if (startCardBankerWins[i] > startCardPlayerWins[i]) {
       $('#card' + i + 'BankerWinsSpan').attr('class','positive');
@@ -364,16 +426,13 @@ function updateUI() {
 
 function runSimulation() {
   startTime = new Date();
-  //$('#mainDiv').addClass('loading'); 
-  //$('body').attr('class', 'loading'); 
   $('#loading').show();
-
-  setTimeout(() => { asyncSimulation(); }, 100);
+  setTimeout(() => { asyncSimulation(); }, 10);
 }
 
 function asyncSimulation() {
-  //startTime = new Date();
 	let simulatedHandCount = getSimulatedHandCount();
+	let accuracy = getAccuracy();
   let bettingConfig = getBettingConfig();
 
   if (simulatedHandCount <= 0) {
@@ -384,16 +443,12 @@ function asyncSimulation() {
   resetStats();
 
   for (let j = 0; j < simulatedHandCount; j++) {
-    dealHand(bettingConfig);
+    dealHand(bettingConfig, accuracy);
   }
   
   endTime = new Date();
   updateUI();
-  //$('#mainDiv').removeClass('loading'); 
-  //$('body').attr('class', ''); 
   hideLoader();
-  //$('body').attr('class', ''); 
-  //setTimeout(() => { $('body').attr('class', ''); }, 100);
 }
 
 function hideLoader() {
