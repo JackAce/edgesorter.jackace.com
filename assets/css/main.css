@@ -9,6 +9,10 @@ p, div, span {
     font-size: 14px;
 }
 
+a {
+    color: #ccc;
+}
+
 td {
     padding: 2px;
     color: #333;
@@ -17,6 +21,26 @@ td {
 td.data {
     text-align: right;
     width: 60px;
+}
+
+.disclaimer {
+    color: #999;
+    font-size: 12px;
+}
+.disclaimer-column {
+    width: 300px;
+}
+.elapsed-time-column {
+    width: 300px;
+}
+
+.instruction-copy {
+    color: #ccc;
+    font-size: 12px;
+}
+
+.footer {
+    width: 600px;
 }
 
 .table-header {
