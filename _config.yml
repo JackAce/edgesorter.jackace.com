@@ -27,6 +27,7 @@ url: "https://edgesorter.jackace.com" # the base hostname & protocol for your si
 twitter_username: jackace
 github_username:  jackace
 google_analytics: G-4PMVXXTQ5D
-google_adsense: ca-pub-6195512053653719
+#google_adsense: ca-pub-6195512053653719 #old individual adsense account
+google_adsense: pub-5831288475713424 #new business adsense account
 
 port: 4999
